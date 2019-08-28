@@ -1,0 +1,24 @@
+[sssd]
+{% for key, value in sssd_sssd.items() | default({}) %}
+{{ key }} = {{ value }}
+{% endfor %}
+{% if not 'services' in sssd_sssd %}
+services = {{ sssd_services.keys() | join(', ') }}
+{% endif %}
+{% if not 'domains' in sssd_sssd %}
+domains = {{ sssd_domains.keys() | join(', ') }}
+{% endif %}
+
+{% for service, config in sssd_services.items() %}
+[{{ service }}]
+{% for key, value in config.items() | default({}) %}
+{{ key }} = {{ value }}
+{% endfor %}
+{% endfor %}
+
+{% for domain, config in sssd_domains.items() %}
+[domain/{{ domain }}]
+{% for key, value in config.items() %}
+{{ key }} = {{ value }}
+{% endfor %}
+{% endfor %}

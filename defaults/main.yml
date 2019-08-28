@@ -1,0 +1,25 @@
+---
+__sssd_debian: "{{ ansible_os_family == 'Debian' }}"
+__sssd_redhat: "{{ ansible_os_family == 'RedHat' }}"
+
+__sssd_debian_sssd_packages:
+  - sssd
+__sssd_redhat_sssd_packages:
+  - authconfig
+  - sssd
+
+sssd_oddjob_mkhomedir: False
+sssd_oddjob_packages:
+  - oddjob
+  - oddjob-mkhomedir
+
+sssd_authconfig: "{{ ['enablemkhomedir', 'enablesssdauth'] if sssd_oddjob_mkhomedir else ['enablesssdauth'] }}"
+
+sssd_deploy_facts: True
+
+sssd_packages: "{{ __sssd_debian_sssd_packages if __sssd_debian else __sssd_redhat_sssd_packages }}"
+
+sssd_services: {}
+
+sssd_sssd:
+  config_file_version: 2

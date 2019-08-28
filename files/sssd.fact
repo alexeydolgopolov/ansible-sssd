@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+
+import json
+import subprocess
+
+try:
+    result = subprocess.run(['/usr/bin/env', 'sssd', '--version'],
+                            capture_output=True,
+                            text=True)
+
+    fact = {
+        'version': result.stdout
+    }
+except subprocess.CalledProcessError as e:
+    fact = {
+        'error': str(e)
+    }
+
+print(json.dumps(fact))

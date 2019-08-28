@@ -1,0 +1,62 @@
+---
+- name: create custom facts directory
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+  when: sssd_deploy_facts
+
+- name: deploy custom facts
+  copy:
+    src: sssd.fact
+    dest: /etc/ansible/facts.d/sssd.fact
+    mode: 0755
+  when: sssd_deploy_facts
+
+
+- name: install SSSD
+  package:
+    name: "{{ sssd_packages }}"
+    state: present
+
+- name: deploy sssd.conf
+  template:
+    src: sssd.conf.j2
+    dest: /etc/sssd/sssd.conf
+    mode: 0600
+  notify:
+    - restart sssd
+
+
+- name: install oddjobd
+  package:
+    name: "{{ sssd_oddjob_packages }}"
+    state: present
+  when: sssd_oddjob_mkhomedir
+  notify:
+    - restart oddjobd
+
+- name: add pam_mkhomedir.so to /etc/pam.d/common-session
+  lineinfile:
+    path: /etc/pam.d/common-session
+    line: session required  pam_mkhomedir.so skel=/etc/skel/ umask=0022
+    insertafter: 'session\s+required\s+pam_unix.so'
+  when: sssd_oddjob_mkhomedir and __sssd_debian
+
+
+- name: run authconfig
+  command: /usr/sbin/authconfig {{ sssd_authconfig | longoptions() }} --update
+  when: __sssd_redhat
+
+
+- name: start sssd
+  service:
+    name: sssd
+    enabled: True
+    state: started
+
+- name: start oddjobd
+  service:
+    name: oddjobd
+    enabled: True
+    state: started
+  when: sssd_oddjob_mkhomedir
