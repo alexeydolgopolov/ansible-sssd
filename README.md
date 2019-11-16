@@ -5,11 +5,12 @@ Install SSSD and configure the authentication backend
 ## Requirements
 
 - Ansible >= 2.5
-- Python >= 3.6
+- Python >= 3.6 (on the target system if using the custom fact)
+- a compatible OS:
+  - Debian/Ubuntu
+  - RedHat-like
 
 ## Role Variables
-
-### Main variables
 
 The main configuration variables and their defaults:
 
@@ -53,9 +54,10 @@ sssd_sssd:
 - name: SSSD
   hosts: localhost
   roles:
-    - sssd
+    - refual.sssd
   vars:
     sssd_services:
+      nss: {}
       pam:
         offline_credentials_expiration: 3
     sssd_domains:
@@ -87,7 +89,7 @@ sssd_sssd:
 License
 -------
 
-MIT
+[MIT](https://github.com/refual/ansible-sssd/blob/master/LICENSE)
 
 Author Information
 ------------------
