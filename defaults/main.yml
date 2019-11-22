@@ -3,6 +3,8 @@ __sssd_debian: "{{ ansible_os_family == 'Debian' }}"
 __sssd_redhat: "{{ ansible_os_family == 'RedHat' }}"
 
 __sssd_debian_sssd_packages:
+  - libnss-sss
+  - libpam-sss
   - sssd
 __sssd_redhat_sssd_packages:
   - authconfig
