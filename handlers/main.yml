@@ -3,8 +3,10 @@
   service:
     name: oddjobd
     state: restarted
+  become: yes
 
 - name: restart sssd
   service:
     name: sssd
     state: restarted
+  become: yes
